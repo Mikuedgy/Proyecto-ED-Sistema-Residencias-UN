@@ -1,13 +1,13 @@
-PROYECTO DE RESIDENCIAS UN
+###PROYECTO DE RESIDENCIAS UN
 
-INTEGRANTES
+###INTEGRANTES
 Santiago Villalobos Castelblanco<br>
 Julian David Gutierrez Castillo<br>
 Darwin Jouse Ojeda Torres<br>
 Silvana Ramírez Ardila<br>
 Sofia Franco Segura
 
-DESCRIPCION
+###DESCRIPCION
 
 En la Universidad Nacional se prestaba el servicio de residencias universitarias destinadas al apoyo y bienestar de los estudiantes más vulnerables. Las residencias son limitadas y exigen una alta demanda por lo cual es menester desarrollar una solución de gestión eficiente y justa.
 
