@@ -16,7 +16,7 @@ Integrantes
 
 Lenguajes
 
-* Java/C++
+* Java
 * Control de versiones: Git
 * Repositorio: GitHub
   
