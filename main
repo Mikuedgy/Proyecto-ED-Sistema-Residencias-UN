@@ -1,0 +1,41 @@
+import java.util.Scanner;
+
+public class Menu {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        boolean salir = false;
+
+        System.out.println("=== SISTEMA DE GESTIÓN DE RESIDENCIAS UNAL ===");
+
+        while (!salir) {
+            System.out.println("\n--- Menú de Opciones ---");
+            System.out.println("1. Registrar estudiante en el sistema");
+            System.out.println("2. Definir/Actualizar cupos de residencia");
+            System.out.println("3. Mostras listado de estudiantes por puntaje");
+            System.out.println("4. Asignar cupos según disponibilidad de residencia");
+            System.out.println("5. Consultar estado de asignación de un estudiante");
+            System.out.println("6. Eliminar estudiante");
+            System.out.println("0. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            int opcion = sc.nextInt();
+
+
+            switch (opcion) {
+                case 1 -> System.out.println("Ejecutando: Registro de datos personales...");
+                case 2 -> System.out.println("Ejecutando: Actualización de cupos disponibles...");
+                case 3 -> System.out.println("Ejecutando: Generación de reporte de estudiantes...");
+                case 4 -> System.out.println("Ejecutando: Asignación prioritaria...");
+                case 5 -> System.out.println("Ejecutando: Filtrado por estado de asignación...");
+                case 6 -> System.out.println("Ejecutando: Eliminación de estudiante de todas las estructuras...");
+                case 0 -> {
+                    System.out.println("Saliendo del sistema...");
+                    salir = true;
+                }
+                default -> System.out.println("Opción no válida. Intente de nuevo.");
+            }
+            
+        }
+        sc.close();
+    }
+}
