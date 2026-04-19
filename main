@@ -1,7 +1,13 @@
 import java.util.Scanner;
 
+
+
 public class Menu {
     public static void main(String[] args) {
+        HashMap<Integer, Estudiante> hashMap = new HashMap<>();
+        AVL<Estudiante> avl = new AVL<>();
+        MinHeap<Estudiante> minHeap = new MinHeap<>();
+        int cupos = 0;
         Scanner sc = new Scanner(System.in);
         boolean salir = false;
 
@@ -23,17 +29,103 @@ public class Menu {
 
 
             switch (opcion) {
-                case 1 -> System.out.println("Ejecutando: Registro de datos personales...");
-                case 2 -> System.out.println("Ejecutando: Actualización de cupos disponibles...");
-                case 3 -> System.out.println("Ejecutando: Generación de reporte de estudiantes...");
-                case 4 -> System.out.println("Ejecutando: Asignación prioritaria...");
-                case 5 -> System.out.println("Ejecutando: Filtrado por estado de asignación...");
-                case 6 -> System.out.println("Ejecutando: Eliminación de estudiante de todas las estructuras...");
-                case 7 -> System.out.println("Ejecutando: Actualización de estudiante de todas las estructuras...");
+                case 1 -> {
+                    System.out.println("Ejecutando: Registro de datos personales...");
+                    // Leer datos
+                    System.out.print("ID: ");
+                    int id = sc.nextInt();
+                    sc.nextLine();
+                    System.out.print("Nombre: ");
+                    String nombre = sc.nextLine();
+                    System.out.print("PBM: ");
+                    double pbm = sc.nextDouble();
+            
+                    Estudiante e = new Estudiante(id, nombre, pbm);
+            
+                    hashMap.put(id, e);          // O(1)
+                    avl.insert(e);               // O(log n)
+                    minHeap.insert(e);           // O(log n)
+                }
+            
+                case 2 -> {
+                    System.out.println("Ejecutando: Actualización de cupos disponibles...");
+                    System.out.print("Ingrese cantidad de cupos: ");
+                    cuposn = sc.nextInt();        // O(1)
+                    while (cuposn<0){
+                        System.out.println("No se puede disminuir la cantidad de cupos respecto a la cantidad anterior. Ingrese cantidad de cupos: ");
+                    cuposn = sc.nextInt();
+                    }
+                    cupos=cuposn;
+                }
+            
+                case 3 -> {
+                    System.out.println("Ejecutando: Generación de reporte de estudiantes...");
+                    avl.printTree();               // O(n)
+                }
+            
+                case 4 -> {
+                    System.out.println("Ejecutando: Asignación prioritaria...");
+                    while (cupos > 0 && !minHeap.isEmpty()) {
+                        Estudiante e = minHeap.extractMin(); // O(log n)
+                        e.setHasResidency(true);
+                        cupos--;
+                    }
+                }
+            
+                case 5 -> {
+                    System.out.println("Ejecutando: Filtrado por estado de asignación...");
+                    System.out.print("Ingrese ID: ");
+                    int id = sc.nextInt();
+            
+                    Estudiante e = hashMap.get(id); // O(1)
+            
+                    if (e != null) {
+                        System.out.println("Nombre: " + e.getNombre());
+                        System.out.println("PBM: " + e.getPbm());
+                        System.out.println("Residencia: " + e.getHasResidency());
+                    } else {
+                        System.out.println("Estudiante no encontrado.");
+                    }
+                }
+            
+                case 6 -> {
+                    System.out.println("Ejecutando: Eliminación de estudiante de todas las estructuras...");
+                    System.out.print("Ingrese ID: ");
+                    int id = sc.nextInt();
+            
+                    Estudiante e = hashMap.get(id);    //O(1)
+            
+                    if (e != null) {
+                        avl.delete(e);           // O(log n)
+                        minHeap.remove(e);       // O(log n) (si lo implementaste)
+                        hashMap.remove(id);      // O(1)
+                    }
+                }
+            
+                case 7 -> {
+                    System.out.println("Ejecutando: Actualización de estudiante de todas las estructuras...");
+                    System.out.print("Ingrese ID: ");
+                    int id = sc.nextInt();
+            
+                    Estudiante e = hashMap.get(id); //O(1)
+            
+                    if (e != null) {
+                        avl.delete(e); // quitar viejo, O(log n)
+            
+                        System.out.print("Nuevo PBM: ");
+                        double nuevo = sc.nextDouble();
+                        e.setPbm(nuevo);
+            
+                        avl.insert(e);           // reinsertar    O(log n)
+                        minHeap.insert(e);       // actualizar prioridad (simplificado)    O(log n)
+                    }
+                }
+            
                 case 0 -> {
                     System.out.println("Saliendo del sistema...");
                     salir = true;
                 }
+            
                 default -> System.out.println("Opción no válida. Intente de nuevo.");
             }
             
