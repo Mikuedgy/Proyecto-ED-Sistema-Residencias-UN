@@ -9,12 +9,13 @@ public class Menu {
 
         while (!salir) {
             System.out.println("\n--- Menú de Opciones ---");
-            System.out.println("1. Registrar estudiante en el sistema"); //Si el estudiante ya se encuentra, actualizar PBM
+            System.out.println("1. Registrar estudiante en el sistema"); 
             System.out.println("2. Definir/Actualizar cupos de residencia");
             System.out.println("3. Mostras listado de estudiantes por puntaje");
             System.out.println("4. Asignar cupos según disponibilidad de residencia");
             System.out.println("5. Consultar estado de asignación de un estudiante");
             System.out.println("6. Eliminar estudiante");
+            System.out.println("7. Actualizar estudiante");
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
 
@@ -28,6 +29,7 @@ public class Menu {
                 case 4 -> System.out.println("Ejecutando: Asignación prioritaria...");
                 case 5 -> System.out.println("Ejecutando: Filtrado por estado de asignación...");
                 case 6 -> System.out.println("Ejecutando: Eliminación de estudiante de todas las estructuras...");
+                case 7 -> System.out.println("Ejecutando: Actualización de estudiante de todas las estructuras...");
                 case 0 -> {
                     System.out.println("Saliendo del sistema...");
                     salir = true;
