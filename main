@@ -22,6 +22,7 @@ public class Menu {
             System.out.println("5. Consultar estado de asignación de un estudiante");
             System.out.println("6. Eliminar estudiante");
             System.out.println("7. Actualizar estudiante");
+            System.out.println("8. Mostrar estudiantes según estado de asignación");
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
 
@@ -118,6 +119,21 @@ public class Menu {
             
                         avl.insert(e);           // reinsertar    O(log n)
                         minHeap.insert(e);       // actualizar prioridad (simplificado)    O(log n)
+                    }
+                }
+                case 8 -> {
+                    System.out.println("1. Mostrar asignados");
+                    System.out.println("2. Mostrar no asignados");
+                    int op = sc.nextInt();
+                
+                    if (op == 1) {
+                        System.out.println("=== Estudiantes con residencia ===");
+                        avl.printByResidency(true);   // recorrido filtrado
+                    } else if (op == 2) {
+                        System.out.println("=== Estudiantes sin residencia ===");
+                        avl.printByResidency(false);  // recorrido filtrado
+                    } else {
+                        System.out.println("Opción no válida.");
                     }
                 }
             
