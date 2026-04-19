@@ -205,4 +205,19 @@ private void printTree(Node node, String prefix, boolean isTail) {
             printTree(node.left, prefix + (isTail ? "   " : "│  "), true);
     }
 }
+public void printByResidency(boolean estado) {
+    printByResidencyRec(root, estado);
+}
+
+private void printByResidencyRec(Node<Estudiante> node, boolean estado) {
+    if (node == null) return;
+
+    printByResidencyRec(node.left, estado);
+
+    if (node.data.getHasResidency() == estado) {
+        System.out.println(node.data);
+    }
+
+    printByResidencyRec(node.right, estado);
+}
 }
