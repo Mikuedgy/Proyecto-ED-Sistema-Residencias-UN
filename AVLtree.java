@@ -14,6 +14,27 @@ public class AVLTree <T extends Comparable<T>> {
 
     private Node root;
 
+    public T searchById(long id) {
+        return searchByIdRec(root, id);
+    }
+
+    private T searchByIdRec(Node node, long id) {
+        if (node == null) {
+            return null;
+        }
+
+        Estudiante estudianteActual = (Estudiante) node.key;
+
+        if (id == estudianteActual.getId()) {
+            return node.key;
+        }
+
+        if (id < estudianteActual.getId()) {
+            return searchByIdRec(node.left, id);
+        } else {
+            return searchByIdRec(node.right, id);
+        }
+    }
 
     public void insert(T key) {
         root = insert(root, key, null);

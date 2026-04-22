@@ -33,19 +33,19 @@ public class MinHeap <T extends Comparable<T>> {
         return min;
     }
 
-    public void ChangePriority(int i, T NewValue) {
-        if (i < 0 || i >= minHeap.size()) return;
+    public void ChangePriority(int i, T newValue) {
+    if (i < 0 || i >= minHeap.size()) return;
 
-        T oldValue = minHeap.get(i);
-        minHeap.set(i, NewValue);
+    int oldPbm = ((Estudiante) minHeap.get(i)).getPbm();
+    minHeap.set(i, newValue);
+    int newPbm = ((Estudiante) newValue).getPbm();
 
-        if (NewValue.compareTo(oldValue) < 0) {
-            siftUp(i);
-        }
-        else {
-            siftDown(i);
-        }
+    if (newPbm < oldPbm) {
+        siftUp(i);
+    } else {
+        siftDown(i);
     }
+}
 
     public void remove(int i) {
         if (i < 0 || i >= minHeap.size()) return;
@@ -69,9 +69,13 @@ public class MinHeap <T extends Comparable<T>> {
     private void siftUp(int i) {
     while (i > 0) {
         int parentIndex = (i - 1) / 2;
-        if (minHeap.get(i).compareTo(minHeap.get(parentIndex)) < 0) {
+        
+        Estudiante actual = (Estudiante) minHeap.get(i);
+        Estudiante padre = (Estudiante) minHeap.get(parentIndex);
+
+        if (actual.getPbm() < padre.getPbm()) {
             Swap(i, parentIndex);
-            i = parentIndex; 
+            i = parentIndex;
         } else {
             break;
         }
@@ -86,12 +90,20 @@ public class MinHeap <T extends Comparable<T>> {
         int leftChild = 2 * i + 1;
         int rightChild = 2 * i + 2;
 
-        if (leftChild < size && minHeap.get(leftChild).compareTo(minHeap.get(minIndex)) < 0) {
-            minIndex = leftChild;
+        if (leftChild < size) {
+            Estudiante hijoIzq = (Estudiante) minHeap.get(leftChild);
+            Estudiante menorActual = (Estudiante) minHeap.get(minIndex);
+            if (hijoIzq.getPbm() < menorActual.getPbm()) {
+                minIndex = leftChild;
+            }
         }
 
-        if (rightChild < size && minHeap.get(rightChild).compareTo(minHeap.get(minIndex)) < 0) {
-            minIndex = rightChild;
+        if (rightChild < size) {
+            Estudiante hijoDer = (Estudiante) minHeap.get(rightChild);
+            Estudiante menorActual = (Estudiante) minHeap.get(minIndex);
+            if (hijoDer.getPbm() < menorActual.getPbm()) {
+                minIndex = rightChild;
+            }
         }
 
         if (minIndex != i) {
@@ -101,5 +113,5 @@ public class MinHeap <T extends Comparable<T>> {
             break;
         }
     }
-    }
+}
 }
