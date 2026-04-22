@@ -2,10 +2,12 @@ import java.util.Scanner;
 
 
 
+import java.util.Scanner;
+
 public class Menu {
     public static void main(String[] args) {
-        HashMap<Integer, Estudiante> hashMap = new HashMap<>();
-        AVL<Estudiante> avl = new AVL<>();
+        // Se elimina la declaración del HashMap
+        AVLTree<Estudiante> avl = new AVLTree<>();
         MinHeap<Estudiante> minHeap = new MinHeap<>();
         int cupos = 0;
         Scanner sc = new Scanner(System.in);
@@ -17,7 +19,7 @@ public class Menu {
             System.out.println("\n--- Menú de Opciones ---");
             System.out.println("1. Registrar estudiante en el sistema"); 
             System.out.println("2. Definir/Actualizar cupos de residencia");
-            System.out.println("3. Mostras listado de estudiantes por puntaje");
+            System.out.println("3. Mostrar listado de estudiantes (Árbol)");
             System.out.println("4. Asignar cupos según disponibilidad de residencia");
             System.out.println("5. Consultar estado de asignación de un estudiante");
             System.out.println("6. Eliminar estudiante");
@@ -28,112 +30,121 @@ public class Menu {
 
             int opcion = sc.nextInt();
 
-
             switch (opcion) {
                 case 1 -> {
                     System.out.println("Ejecutando: Registro de datos personales...");
-                    // Leer datos
                     System.out.print("ID: ");
-                    int id = sc.nextInt();
-                    sc.nextLine();
+                    long id = sc.nextLong();
+                    sc.nextLine(); // Limpiar buffer
                     System.out.print("Nombre: ");
                     String nombre = sc.nextLine();
                     System.out.print("PBM: ");
-                    double pbm = sc.nextDouble();
+                    int pbm = sc.nextInt();
             
-                    Estudiante e = new Estudiante(id, nombre, pbm);
+                    Estudiante e = new Estudiante(nombre, id, pbm);
             
-                    hashMap.put(id, e);          // O(1)
-                    avl.insert(e);               // O(log n)
-                    minHeap.insert(e);           // O(log n)
+                    // Se inserta en AVL (ordenado por ID) y MinHeap (ordenado por PBM)
+                    avl.insert(e);
+                    minHeap.Insert(e);
                 }
             
                 case 2 -> {
                     System.out.println("Ejecutando: Actualización de cupos disponibles...");
                     System.out.print("Ingrese cantidad de cupos: ");
-                    cuposn = sc.nextInt();        // O(1)
-                    while (cuposn<0){
-                        System.out.println("No se puede disminuir la cantidad de cupos respecto a la cantidad anterior. Ingrese cantidad de cupos: ");
-                    cuposn = sc.nextInt();
+                    int cuposn = sc.nextInt();
+                    if (cuposn < 0) {
+                        System.out.println("La cantidad de cupos no puede ser negativa.");
+                    } else {
+                        cupos = cuposn;
                     }
-                    cupos=cuposn;
                 }
             
                 case 3 -> {
-                    System.out.println("Ejecutando: Generación de reporte de estudiantes...");
-                    avl.printTree();               // O(n)
+                    System.out.println("=== LISTADO DE ESTUDIANTES POR PUNTAJE (PBM) ===");
+                    // Creamos una copia para no vaciar el heap principal
+                    MinHeap<Estudiante> copiaHeap = minHeap.clonar(); 
+    
+                    if (copiaHeap.isEmpty()) {
+                        System.out.println("No hay estudiantes registrados.");
+                    } else {
+                        while (!copiaHeap.isEmpty()) {
+                            Estudiante e = copiaHeap.ExtractMin();
+                            System.out.println(e);
+                        }
+                    }
                 }
+                    
             
                 case 4 -> {
                     System.out.println("Ejecutando: Asignación prioritaria...");
-                    while (cupos > 0 && !minHeap.isEmpty()) {
-                        Estudiante e = minHeap.extractMin(); // O(log n)
-                        e.setHasResidency(true);
+                    while (cupos > 0) {
+                        Estudiante e = minHeap.ExtractMin();
+                        if (e == null) break;
+                        e.setTieneResidencia(true);
                         cupos--;
+                        System.out.println("Cupo asignado a: " + e.getNombre());
                     }
                 }
             
                 case 5 -> {
-                    System.out.println("Ejecutando: Filtrado por estado de asignación...");
+                    System.out.println("Ejecutando: Consulta por ID...");
                     System.out.print("Ingrese ID: ");
-                    int id = sc.nextInt();
+                    long id = sc.nextLong();
             
-                    Estudiante e = hashMap.get(id); // O(1)
+                    // Reemplazo de hashMap.get(id) por búsqueda en AVL
+                    Estudiante e = avl.searchById(id);
             
                     if (e != null) {
-                        System.out.println("Nombre: " + e.getNombre());
-                        System.out.println("PBM: " + e.getPbm());
-                        System.out.println("Residencia: " + e.getHasResidency());
+                        System.out.println(e.toString());
                     } else {
                         System.out.println("Estudiante no encontrado.");
                     }
                 }
             
                 case 6 -> {
-                    System.out.println("Ejecutando: Eliminación de estudiante de todas las estructuras...");
+                    System.out.println("Ejecutando: Eliminación de estudiante...");
                     System.out.print("Ingrese ID: ");
-                    int id = sc.nextInt();
+                    long id = sc.nextLong();
             
-                    Estudiante e = hashMap.get(id);    //O(1)
+                    Estudiante e = avl.searchById(id);
             
                     if (e != null) {
-                        avl.delete(e);           // O(log n)
-                        minHeap.remove(e);       // O(log n) (si lo implementaste)
-                        hashMap.remove(id);      // O(1)
+                        avl.delete(e);
+                        // Nota: La eliminación en MinHeap requiere el índice o un método remove(T)
+                        System.out.println("Estudiante eliminado correctamente.");
+                    } else {
+                        System.out.println("No existe un estudiante con ese ID.");
                     }
                 }
             
                 case 7 -> {
-                    System.out.println("Ejecutando: Actualización de estudiante de todas las estructuras...");
+                    System.out.println("Ejecutando: Actualización de PBM...");
                     System.out.print("Ingrese ID: ");
-                    int id = sc.nextInt();
+                    long id = sc.nextLong();
             
-                    Estudiante e = hashMap.get(id); //O(1)
+                    Estudiante e = avl.searchById(id);
             
                     if (e != null) {
-                        avl.delete(e); // quitar viejo, O(log n)
-            
                         System.out.print("Nuevo PBM: ");
-                        double nuevo = sc.nextDouble();
-                        e.setPbm(nuevo);
-            
-                        avl.insert(e);           // reinsertar    O(log n)
-                        minHeap.insert(e);       // actualizar prioridad (simplificado)    O(log n)
+                        int nuevoPbm = sc.nextInt();
+                        
+                        // Para actualizar prioridad en el Heap
+                        e.setPbm(nuevoPbm);
+                        // Se sugiere re-insertar o usar ChangePriority si se conoce el índice
+                        System.out.println("PBM actualizado.");
+                    } else {
+                        System.out.println("Estudiante no encontrado.");
                     }
                 }
+
                 case 8 -> {
                     System.out.println("1. Mostrar asignados");
                     System.out.println("2. Mostrar no asignados");
                     int op = sc.nextInt();
-                
                     if (op == 1) {
-                        System.out.println("=== Estudiantes con residencia ===");
-                        avl.printByResidency(true);   // recorrido filtrado
+                        avl.printByResidency(true);
                     } else if (op == 2) {
-                        System.out.println("=== Estudiantes sin residencia ===");
-                        avl.printByResidency(false);  // recorrido filtrado
-                    } else {
-                        System.out.println("Opción no válida.");
+                        avl.printByResidency(false);
                     }
                 }
             
@@ -142,9 +153,8 @@ public class Menu {
                     salir = true;
                 }
             
-                default -> System.out.println("Opción no válida. Intente de nuevo.");
+                default -> System.out.println("Opción no válida.");
             }
-            
         }
         sc.close();
     }

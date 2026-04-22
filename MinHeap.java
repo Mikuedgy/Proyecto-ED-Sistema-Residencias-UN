@@ -7,6 +7,18 @@ public class MinHeap <T extends Comparable<T>> {
         this.minHeap = new ArrayList<>();
     }
 
+    public MinHeap<T> clonar() {
+        MinHeap<T> copia = new MinHeap<>();
+        for (T elemento : this.minHeap) {
+            copia.Insert(elemento);
+        }
+        return copia;
+    }
+
+    public boolean isEmpty() {
+        return minHeap.isEmpty();
+    }
+
     public T GetMin() {
         if (minHeap.isEmpty()) {
             return null;
