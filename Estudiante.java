@@ -34,38 +34,3 @@ public class Estudiante implements Comparable<Estudiante> {
     }
 }
 
-/*public class Estudiante implements Comparable<Estudiante> {
-    private String nombre;
-    private long id;
-    private int pbm;
-    private boolean tieneResidencia;
-
-    public Estudiante(String nombre, long id, int pbm) {
-        this.nombre = nombre;
-        this.id = id;
-        this.pbm = pbm;
-        this.tieneResidencia = false;
-    }
-
-    public String getNombre() { return nombre; }
-    public long getId() { return id; }
-    public int getPbm() { return pbm; }
-    public boolean isTieneResidencia() { return tieneResidencia; }
-    
-    public void setPbm(int pbm) { this.pbm = pbm; }
-    public void setTieneResidencia(boolean tieneResidencia) { 
-        this.tieneResidencia = tieneResidencia; 
-    }
-
-    @Override
-    public int compareTo(Estudiante otro) {
-        return Long.compare(this.id, otro.id);
-    }
-
-    @Override
-    public String toString() {
-        return "ID: " + id + " | Estudiante: " + nombre + " | PBM: " + pbm + 
-               " | Estado: " + (tieneResidencia ? "Asignado" : "No Asignado");
-    }
-}
-*/

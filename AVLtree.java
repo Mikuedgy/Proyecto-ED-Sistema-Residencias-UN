@@ -128,9 +128,9 @@ public class AVLTree <T extends Comparable<T>> {
 
         adjustHeight(node);
 
-        if (node.parent != null) {
-            rebalance(node.parent);
-        }
+         //if (node.parent != null) {
+           //rebalance(node.parent);
+           // }
     }
 
     private void rebalanceRight(Node node) {
