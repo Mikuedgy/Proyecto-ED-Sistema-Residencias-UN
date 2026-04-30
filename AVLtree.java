@@ -1,6 +1,9 @@
 public class AVLTree <T extends Comparable<T>> {
 
+    private Node root;
+
     public class Node {
+
         T key;
         Node left, right, parent;
         int height;
@@ -12,13 +15,13 @@ public class AVLTree <T extends Comparable<T>> {
         }
     }
 
-    private Node root;
-
+    ////////////////////////////////////////// ----> METODOS EXTRA PROYECTO
+    
     public T searchById(long id) {
         return searchByIdRec(root, id);
     }
 
-    private T searchByIdRec(Node node, long id) {
+    private T searchByIdRec(Node node, long id) {//(version recursiva)
         if (node == null) {
             return null;
         }
@@ -36,24 +39,52 @@ public class AVLTree <T extends Comparable<T>> {
         }
     }
 
+    public void printByResidency(boolean estado) {
+        printByResidencyRec(root, estado);
+    }
+
+    private void printByResidencyRec(Node node, boolean estado) {//(version recursiva)
+        if (node == null) return;
+
+        printByResidencyRec(node.left, estado);
+
+        Estudiante e = (Estudiante) node.key;  
+        if (e.getHasResidency() == estado) {
+            System.out.println(e);
+        }
+
+        printByResidencyRec(node.right, estado);
+    }
+
+    public void printTree() {
+        printTree(root, "", true);
+    }
+
+    private void printTree(Node node, String prefix, boolean isTail) {//(version recursiva)
+        if (node == null) return;
+
+        System.out.println(prefix + (isTail ? "└── " : "├── ") + node.key);
+
+        boolean hasLeft  = node.left  != null;
+        boolean hasRight = node.right != null;
+
+        if (hasLeft || hasRight) {
+            if (hasRight)
+                printTree(node.right, prefix + (isTail ? "   " : "│  "), false);
+            if (hasLeft)
+                printTree(node.left,  prefix + (isTail ? "   " : "│  "), true);
+        }
+    }
+
+    ////////////////////////////////////////// ----> METODOS PROPIOS DE AVLTREE
+    
     public void insert(T key) {
         root = insert(root, key, null);
     }
 
-    private Node insert(Node node, T key, Node parent) {
-        if (node == null) return new Node(key, parent);
-
-        if (key.compareTo(node.key) < 0) {
-            node.left = insert(node.left, key, node);
-        } else if (key.compareTo(node.key) > 0) {
-            node.right = insert(node.right, key, node);
-        }
-
-        adjustHeight(node);
-        rebalance(node);    // bug 1 fix: rebalanceo integrado en la recursión
-        return node;
+    public Node find(T key) {
+        return find(root, key);
     }
-
 
     public void delete(T key) {
         Node toDelete = find(key);
@@ -64,7 +95,41 @@ public class AVLTree <T extends Comparable<T>> {
         }
     }
 
-    private Node delete(Node node, T key) {
+    private Node findMin(Node node) {
+        while (node.left != null) node = node.left;
+        return node;
+    }
+
+    private int getHeight(Node node) {
+        return node == null ? 0 : node.height;
+    }
+
+    private void adjustHeight(Node node) {
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    }
+
+    private Node find(Node node, T key) {//(version recursiva)
+        if (node == null) return null;
+        if (key.compareTo(node.key) == 0) return node;
+        if (key.compareTo(node.key) < 0) return find(node.left, key);
+        return find(node.right, key);
+    }
+
+    private Node insert(Node node, T key, Node parent) {//(version recursiva)
+        if (node == null) return new Node(key, parent);
+
+        if (key.compareTo(node.key) < 0) {
+            node.left = insert(node.left, key, node);
+        } else if (key.compareTo(node.key) > 0) {
+            node.right = insert(node.right, key, node);
+        }
+
+        adjustHeight(node);
+        rebalance(node);
+        return node;
+    }
+
+    private Node delete(Node node, T key) {//(version recursiva)
         if (node == null) return null;
 
         int cmp = key.compareTo(node.key);
@@ -95,25 +160,6 @@ public class AVLTree <T extends Comparable<T>> {
         return node;
     }
 
-
-    private Node findMin(Node node) {
-        while (node.left != null) node = node.left;
-        return node;
-    }
-
-
-    public Node find(T key) {
-        return find(root, key);
-    }
-
-    private Node find(Node node, T key) {
-        if (node == null) return null;
-        if (key.compareTo(node.key) == 0) return node;
-        if (key.compareTo(node.key) < 0) return find(node.left, key);
-        return find(node.right, key);
-    }
-
-
     private void rebalance(Node node) {
         if (node == null) return;
 
@@ -127,10 +173,6 @@ public class AVLTree <T extends Comparable<T>> {
         }
 
         adjustHeight(node);
-
-         //if (node.parent != null) {
-           //rebalance(node.parent);
-           // }
     }
 
     private void rebalanceRight(Node node) {
@@ -138,8 +180,8 @@ public class AVLTree <T extends Comparable<T>> {
         if (getHeight(left.right) > getHeight(left.left)) {
             node.left = rotateLeft(left);
         }
-        Node newRoot = rotateRight(node);            // bug 2 fix: guardar resultado
-        if (newRoot.parent == null) root = newRoot;  // bug 2 fix: conectar si es raíz
+        Node newRoot = rotateRight(node);         
+        if (newRoot.parent == null) root = newRoot;  
     }
 
     private void rebalanceLeft(Node node) {
@@ -147,10 +189,9 @@ public class AVLTree <T extends Comparable<T>> {
         if (getHeight(right.left) > getHeight(right.right)) {
             node.right = rotateRight(right);
         }
-        Node newRoot = rotateLeft(node);             // bug 2 fix: guardar resultado
-        if (newRoot.parent == null) root = newRoot;  // bug 2 fix: conectar si es raíz
+        Node newRoot = rotateLeft(node);   
+        if (newRoot.parent == null) root = newRoot;  
     }
-
 
     private Node rotateLeft(Node node) {
         Node newNode = node.right;
@@ -184,51 +225,4 @@ public class AVLTree <T extends Comparable<T>> {
         return newNode;
     }
 
-
-    private int getHeight(Node node) {
-        return node == null ? 0 : node.height;
-    }
-
-    private void adjustHeight(Node node) {
-        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
-    }
-
-
-    public void printTree() {
-        printTree(root, "", true);
-    }
-
-    private void printTree(Node node, String prefix, boolean isTail) {
-        if (node == null) return;
-
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + node.key);
-
-        boolean hasLeft  = node.left  != null;
-        boolean hasRight = node.right != null;
-
-        if (hasLeft || hasRight) {
-            if (hasRight)
-                printTree(node.right, prefix + (isTail ? "   " : "│  "), false);
-            if (hasLeft)
-                printTree(node.left,  prefix + (isTail ? "   " : "│  "), true);
-        }
-    }
-
-
-    public void printByResidency(boolean estado) {
-        printByResidencyRec(root, estado);
-    }
-
-    private void printByResidencyRec(Node node, boolean estado) {  // bug 3 fix: Node en vez de Node<Estudiante>
-        if (node == null) return;
-
-        printByResidencyRec(node.left, estado);
-
-        Estudiante e = (Estudiante) node.key;  // bug 3 fix: cast explícito, node.key en vez de node.data
-        if (e.getHasResidency() == estado) {
-            System.out.println(e);
-        }
-
-        printByResidencyRec(node.right, estado);
-    }
 }
