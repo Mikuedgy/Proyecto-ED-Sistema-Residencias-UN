@@ -10,23 +10,23 @@ public class Estudiante implements Comparable<Estudiante> {
         this.pbm = pbm;
         this.tieneResidencia = false;
     }
-
+    /////////////////-----------> METODOS ESTUDIANTE
+    //GETTERS y SETTERS
     public String getNombre()          { return nombre; }
     public long getId()                { return id; }
     public double getPbm()                { return pbm; }
     public boolean isTieneResidencia() { return tieneResidencia; }
-    public boolean getHasResidency()   { return tieneResidencia; } // alias para AVLTree
+    public boolean getHasResidency()   { return tieneResidencia; }//alias para AVLTree
 
     public void setPbm(double pbm)        { this.pbm = pbm; }
     public void setTieneResidencia(boolean tieneResidencia) {
         this.tieneResidencia = tieneResidencia;
     }
-
+    //AUX
     @Override
     public int compareTo(Estudiante otro) {
         return Long.compare(this.id, otro.id);
     }
-
     @Override
     public String toString() {
         return "ID: " + id + " | Estudiante: " + nombre + " | PBM: " + pbm +
