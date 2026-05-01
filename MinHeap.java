@@ -60,6 +60,10 @@ public class MinHeap<T extends Comparable<T>> {
         }
     }
     
+    public int getSize() {
+    return size;
+    }
+    
     ////////////////////////////////////////// ----> METODOS PROPIOS DE MINHEAP
     
     public boolean isEmpty() {

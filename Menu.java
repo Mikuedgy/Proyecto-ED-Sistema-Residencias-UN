@@ -104,31 +104,27 @@ public class Menu {
                     System.out.println("║         ASIGNACIÓN PRIORITARIA               ║");
                     System.out.println("╚══════════════════════════════════════════════╝");
                     if (cupos == 0) {
-                        System.out.println("  !! No hay cupos disponibles.");
-                    } else {
-                        int asignados = 0;
-                        // guardar temporalmente los extraídos
-                        Estudiante[] temp = new Estudiante[cupos];
-                        int tempSize = 0;
+                            System.out.println("  !! No hay cupos disponibles.");
+                        } else {
+                            int asignados = 0;
+                            int totalEnHeap = minHeap.getSize(); // ← tamaño real del heap
+                            Estudiante[] temp = new Estudiante[totalEnHeap]; // ← cambio aquí
+                            int tempSize = 0;
 
-                        while (cupos > 0) {
-                            Estudiante e = minHeap.ExtractMin();
-                            if (e == null) break;
-                            temp[tempSize++] = e;
-                            if (!e.getHasResidency()) {
-                                e.setTieneResidencia(true);
-                                cupos--;
-                                asignados++;
-                                System.out.println("  !! Cupo asignado a: " + e.getNombre() + " (PBM: " + e.getPbm() + ")");
-                            } else {
-                                // ya tenía residencia, no contar
+                            while (cupos > 0) {
+                                Estudiante e = minHeap.ExtractMin();
+                                if (e == null) break;
+                                temp[tempSize++] = e;
+                                if (!e.getHasResidency()) {
+                                    e.setTieneResidencia(true);
+                                    cupos--;
+                                    asignados++;
+                                    System.out.println("  !! Cupo asignado a: " + e.getNombre() + " (PBM: " + e.getPbm() + ")");
+                                }
                             }
+                            for (int i = 0; i < tempSize; i++) minHeap.Insert(temp[i]);
+                            if (asignados == 0) System.out.println("  !! No hay más estudiantes sin residencia.");
                         }
-                        // reinsertar todos
-                        for (int i = 0; i < tempSize; i++) minHeap.Insert(temp[i]);
-
-                        if (asignados == 0) System.out.println("  !! No hay más estudiantes sin residencia.");
-                    }
                 }
 
                 case 4 -> {
