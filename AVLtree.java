@@ -56,26 +56,6 @@ public class AVLTree <T extends Comparable<T>> {
         printByResidencyRec(node.right, estado);
     }
 
-    public void printTree() {
-        printTree(root, "", true);
-    }
-
-    private void printTree(Node node, String prefix, boolean isTail) {//(version recursiva)
-        if (node == null) return;
-
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + node.key);
-
-        boolean hasLeft  = node.left  != null;
-        boolean hasRight = node.right != null;
-
-        if (hasLeft || hasRight) {
-            if (hasRight)
-                printTree(node.right, prefix + (isTail ? "   " : "│  "), false);
-            if (hasLeft)
-                printTree(node.left,  prefix + (isTail ? "   " : "│  "), true);
-        }
-    }
-
     ////////////////////////////////////////// ----> METODOS PROPIOS DE AVLTREE
     
     public void insert(T key) {
