@@ -115,20 +115,19 @@ public class AVLTree <T extends Comparable<T>> {
         return find(node.right, key);
     }
 
-    private Node insert(Node node, T key, Node parent) {//(version recursiva)
-        if (node == null) return new Node(key, parent);
+    private Node insert(Node node, T key, Node parent) {
+    if (node == null) return new Node(key, parent);
 
-        if (key.compareTo(node.key) < 0) {
-            node.left = insert(node.left, key, node);
-        } else if (key.compareTo(node.key) > 0) {
-            node.right = insert(node.right, key, node);
-        }
-
-        adjustHeight(node);
-        rebalance(node);
-        return node;
+    if (key.compareTo(node.key) < 0) {
+        node.left = insert(node.left, key, node);
+    } else if (key.compareTo(node.key) > 0) {
+        node.right = insert(node.right, key, node);
     }
 
+    adjustHeight(node);
+    return rebalance(node);  // ← usar el resultado directamente
+    }
+    
     private Node delete(Node node, T key) {//(version recursiva)
         if (node == null) return null;
 
@@ -160,38 +159,43 @@ public class AVLTree <T extends Comparable<T>> {
         return node;
     }
 
-    private void rebalance(Node node) {
-        if (node == null) return;
+    private Node rebalance(Node node) {
+    if (node == null) return null;
 
-        int leftHeight  = getHeight(node.left);
-        int rightHeight = getHeight(node.right);
+    int leftHeight  = getHeight(node.left);
+    int rightHeight = getHeight(node.right);
 
-        if (leftHeight > rightHeight + 1) {
-            rebalanceRight(node);
-        } else if (rightHeight > leftHeight + 1) {
-            rebalanceLeft(node);
-        }
-
-        adjustHeight(node);
+    if (leftHeight > rightHeight + 1) {
+        return rebalanceRight(node);  // ← retornar
+    } else if (rightHeight > leftHeight + 1) {
+        return rebalanceLeft(node);   // ← retornar
     }
 
-    private void rebalanceRight(Node node) {
-        Node left = node.left;
-        if (getHeight(left.right) > getHeight(left.left)) {
-            node.left = rotateLeft(left);
-        }
-        Node newRoot = rotateRight(node);         
-        if (newRoot.parent == null) root = newRoot;  
-    }
+    adjustHeight(node);
+    return node;  // ← retornar
+}
 
-    private void rebalanceLeft(Node node) {
-        Node right = node.right;
-        if (getHeight(right.left) > getHeight(right.right)) {
-            node.right = rotateRight(right);
-        }
-        Node newRoot = rotateLeft(node);   
-        if (newRoot.parent == null) root = newRoot;  
+private Node rebalanceRight(Node node) {
+    Node left = node.left;
+    if (getHeight(left.right) > getHeight(left.left)) {
+        node.left = rotateLeft(left);
+        node.left.parent = node;
     }
+    Node newRoot = rotateRight(node);
+    if (newRoot.parent == null) root = newRoot;
+    return newRoot;  // ← retornar
+}
+
+private Node rebalanceLeft(Node node) {
+    Node right = node.right;
+    if (getHeight(right.left) > getHeight(right.right)) {
+        node.right = rotateRight(right);
+        node.right.parent = node;
+    }
+    Node newRoot = rotateLeft(node);
+    if (newRoot.parent == null) root = newRoot;
+    return newRoot;  // ← retornar
+}
 
     private Node rotateLeft(Node node) {
         Node newNode = node.right;

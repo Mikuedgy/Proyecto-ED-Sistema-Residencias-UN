@@ -1,6 +1,32 @@
+import java.util.Random;
 import java.util.Scanner;
 
 public class Menu {
+
+    static void cargarDatosPrueba(AVLTree<Estudiante> avl, MinHeap<Estudiante> minHeap) {
+        Random rand = new Random(42);
+        String[] nombres = {
+            "Ana", "Luis", "María", "Carlos", "Sofia", "Diego", "Valentina", "Andrés",
+            "Isabella", "Santiago", "Camila", "Mateo", "Daniela", "Sebastián", "Mariana",
+            "Felipe", "Laura", "Nicolás", "Paula", "Alejandro"
+        };
+        String[] apellidos = {
+            "Torres", "García", "López", "Ruiz", "Méndez", "Herrera", "Cruz", "Mora",
+            "Díaz", "Reyes", "Vargas", "Castillo", "Romero", "Jiménez", "Morales",
+            "Suárez", "Ramírez", "Flores", "Núñez", "Vega"
+        };
+
+        for (int i = 0; i < 50; i++) {
+            long id = 1000 + i;
+            String nombre = nombres[rand.nextInt(nombres.length)] + " " + apellidos[rand.nextInt(apellidos.length)];
+            double pbm = Math.round((rand.nextDouble() * 20) * 10.0) / 10.0;
+            Estudiante e = new Estudiante(nombre, id, pbm);
+            avl.insert(e);
+            minHeap.Insert(e);
+        }
+        System.out.println("  50 estudiantes de prueba cargados.\n");
+    }
+
     public static void main(String[] args) {
         AVLTree<Estudiante> avl = new AVLTree<>();
         MinHeap<Estudiante> minHeap = new MinHeap<>();
@@ -8,136 +34,199 @@ public class Menu {
         Scanner sc = new Scanner(System.in);
         boolean salir = false;
 
-        System.out.println("=== SISTEMA DE GESTIÓN DE RESIDENCIAS UNAL ===");
+        cargarDatosPrueba(avl, minHeap);
+
+        System.out.println("╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  ____  _____ ____ ___ ____  _____ _   _  ____ ___ _    ___   ║");
+        System.out.println("║ |  _ \\| ____/ ___|_ _|  _ \\| ____| \\ | |/ ___|_ _/ \\  / __|  ║");
+        System.out.println("║ | |_) |  _| \\___ \\| || | | |  _| |  \\| | |    | / _ \\ \\__ \\  ║");
+        System.out.println("║ |  _ <| |___ ___) | || |_| | |___| |\\  | |___ |/ ___ \\ ___/  ║");
+        System.out.println("║ |_| \\_\\_____|____/___|____/|_____|_| \\_|\\____/_/   \\_\\|___/  ║");
+        System.out.println("║                                                              ║");
+        System.out.println("║         Gestión de cupos por puntaje PBM - UNAL              ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
 
         while (!salir) {
-            System.out.println("\n--- Menú de Opciones ---");
-            System.out.println("1. Registrar estudiante en el sistema");
-            System.out.println("2. Definir/Actualizar cupos de residencia");
-            System.out.println("3. Mostrar listado de estudiantes por PBM");
-            System.out.println("4. Asignar cupos según disponibilidad de residencia");
-            System.out.println("5. Consultar estado de asignación de un estudiante");
-            System.out.println("6. Eliminar estudiante");
-            System.out.println("7. Actualizar PBM de estudiante");
-            System.out.println("8. Mostrar estudiantes según estado de asignación");
-            System.out.println("0. Salir");
+            System.out.println("\n╔══════════════════════════════════════════════╗");
+            System.out.println("║           MENÚ DE OPCIONES                   ║");
+            System.out.println("╠══════════════════════════════════════════════╣");
+            System.out.println("║  1. Registrar estudiante                     ║");
+            System.out.println("║  2. Definir cupos                            ║");
+            System.out.println("║  3. Asignar cupos                            ║");
+            System.out.println("║  4. Consultar estudiante                     ║");
+            System.out.println("║  5. Eliminar estudiante                      ║");
+            System.out.println("║  6. Actualizar PBM de estudiante             ║");
+            System.out.println("║  7. Listar no asignados por PBM              ║");
+            System.out.println("║  8. Listar asignados por PBM                 ║");
+            System.out.println("║  0. Salir                                    ║");
+            System.out.println("╚══════════════════════════════════════════════╝");
             System.out.print("Seleccione una opción: ");
 
             int opcion = Integer.parseInt(sc.nextLine().trim());
 
             switch (opcion) {
                 case 1 -> {
-                    System.out.print("ID: ");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║         REGISTRAR ESTUDIANTE                 ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    System.out.print("  ID: ");
                     long id = Long.parseLong(sc.nextLine().trim());
-                    System.out.print("Nombre: ");
-                    String nombre = sc.nextLine().trim();
-                    System.out.print("PBM: ");
-                    double pbm = Double.parseDouble(sc.nextLine().trim());
-
-                    Estudiante e = new Estudiante(nombre, id, pbm);
-                    avl.insert(e);
-                    minHeap.Insert(e);
-                    System.out.println("Estudiante registrado correctamente.");
+                    if (avl.searchById(id) != null) {
+                        System.out.println("  !! Ya existe un estudiante con ese ID.");
+                    } else {
+                        System.out.print("  Nombre: ");
+                        String nombre = sc.nextLine().trim();
+                        System.out.print("  PBM: ");
+                        double pbm = Double.parseDouble(sc.nextLine().trim());
+                        Estudiante e = new Estudiante(nombre, id, pbm);
+                        avl.insert(e);
+                        minHeap.Insert(e);
+                        System.out.println("  !! Estudiante registrado correctamente.");
+                    }
                 }
 
                 case 2 -> {
-                    System.out.print("Ingrese cantidad de cupos: ");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║         ACTUALIZAR CUPOS                     ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    System.out.print("  Ingrese cantidad de cupos: ");
                     int cuposn = Integer.parseInt(sc.nextLine().trim());
                     if (cuposn < 0) {
-                        System.out.println("La cantidad de cupos no puede ser negativa.");
+                        System.out.println("  !! La cantidad de cupos no puede ser negativa.");
                     } else {
                         cupos = cuposn;
-                        System.out.println("Cupos actualizados: " + cupos);
+                        System.out.println("  !! Cupos actualizados: " + cupos);
                     }
                 }
 
                 case 3 -> {
-                    System.out.println("=== LISTADO DE ESTUDIANTES POR PBM ===");
-                    MinHeap<Estudiante> copia = minHeap.clonar();
-                    if (copia.isEmpty()) {
-                        System.out.println("No hay estudiantes registrados.");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║         ASIGNACIÓN PRIORITARIA               ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    if (cupos == 0) {
+                        System.out.println("  !! No hay cupos disponibles.");
                     } else {
-                        while (!copia.isEmpty()) {
-                            System.out.println(copia.ExtractMin());
+                        int asignados = 0;
+                        // guardar temporalmente los extraídos
+                        Estudiante[] temp = new Estudiante[cupos];
+                        int tempSize = 0;
+
+                        while (cupos > 0) {
+                            Estudiante e = minHeap.ExtractMin();
+                            if (e == null) break;
+                            temp[tempSize++] = e;
+                            if (!e.getHasResidency()) {
+                                e.setTieneResidencia(true);
+                                cupos--;
+                                asignados++;
+                                System.out.println("  !! Cupo asignado a: " + e.getNombre() + " (PBM: " + e.getPbm() + ")");
+                            } else {
+                                // ya tenía residencia, no contar
+                            }
                         }
+                        // reinsertar todos
+                        for (int i = 0; i < tempSize; i++) minHeap.Insert(temp[i]);
+
+                        if (asignados == 0) System.out.println("  !! No hay más estudiantes sin residencia.");
                     }
                 }
 
                 case 4 -> {
-                    System.out.println("Ejecutando: Asignación prioritaria...");
-                    if (cupos == 0) {
-                        System.out.println("No hay cupos disponibles.");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║         CONSULTAR ESTUDIANTE                 ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    System.out.print("  Ingrese ID: ");
+                    long id = Long.parseLong(sc.nextLine().trim());
+                    Estudiante e = avl.searchById(id);
+                    if (e != null) {
+                        System.out.println("  " + e);
                     } else {
-                        while (cupos > 0) {
-                            Estudiante e = minHeap.ExtractMin();
-                            if (e == null) break;
-                            e.setTieneResidencia(true);
-                            cupos--;
-                            System.out.println("Cupo asignado a: " + e.getNombre());
-                        }
+                        System.out.println("  !! Estudiante no encontrado.");
                     }
                 }
 
                 case 5 -> {
-                    System.out.print("Ingrese ID: ");
-                    long id = Long.parseLong(sc.nextLine().trim());
-                    Estudiante e = avl.searchById(id);
-                    if (e != null) {
-                        System.out.println(e);
-                    } else {
-                        System.out.println("Estudiante no encontrado.");
-                    }
-                }
-
-                case 6 -> {
-                    System.out.print("Ingrese ID: ");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║         ELIMINAR ESTUDIANTE                  ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    System.out.print("  Ingrese ID: ");
                     long id = Long.parseLong(sc.nextLine().trim());
                     Estudiante e = avl.searchById(id);
                     if (e != null) {
                         avl.delete(e);
-                        minHeap.removeByEstudiante(e); 
-                        System.out.println("Estudiante eliminado correctamente.");
+                        minHeap.removeByEstudiante(e);
+                        System.out.println("  !! Estudiante eliminado correctamente.");
                     } else {
-                        System.out.println("No existe un estudiante con ese ID.");
+                        System.out.println("  !! No existe un estudiante con ese ID.");
+                    }
+                }
+
+                case 6 -> {
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║         ACTUALIZAR PBM                       ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    System.out.print("  Ingrese ID: ");
+                    long id = Long.parseLong(sc.nextLine().trim());
+                    Estudiante e = avl.searchById(id);
+                    if (e != null) {
+                        System.out.print("  Nuevo PBM: ");
+                        double nuevoPbm = Double.parseDouble(sc.nextLine().trim());
+                        minHeap.removeByEstudiante(e);
+                        e.setPbm(nuevoPbm);
+                        minHeap.Insert(e);
+                        System.out.println("  !! PBM actualizado a: " + nuevoPbm);
+                    } else {
+                        System.out.println("  !! Estudiante no encontrado.");
                     }
                 }
 
                 case 7 -> {
-                    System.out.print("Ingrese ID: ");
-                    long id = Long.parseLong(sc.nextLine().trim());
-                    Estudiante e = avl.searchById(id);
-                    if (e != null) {
-                        System.out.print("Nuevo PBM: ");
-                        double nuevoPbm = Double.parseDouble(sc.nextLine().trim());
-                        e.setPbm(nuevoPbm);
-                        System.out.println("PBM actualizado.");
-                    } else {
-                        System.out.println("Estudiante no encontrado.");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║     ESTUDIANTES NO ASIGNADOS POR PBM         ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    MinHeap<Estudiante> copia = minHeap.clonar();
+                    boolean hayNoAsignados = false;
+                    while (!copia.isEmpty()) {
+                        Estudiante e = copia.ExtractMin();
+                        if (!e.getHasResidency()) {
+                            System.out.println("  " + e);
+                            hayNoAsignados = true;
+                        }
+                    }
+                    if (!hayNoAsignados) {
+                        System.out.println("  Todos los estudiantes tienen residencia asignada.");
                     }
                 }
 
                 case 8 -> {
-                    System.out.println("1. Mostrar asignados");
-                    System.out.println("2. Mostrar no asignados");
-                    int op = Integer.parseInt(sc.nextLine().trim());
-                    if (op == 1) {
-                        avl.printByResidency(true);
-                    } else if (op == 2) {
-                        avl.printByResidency(false);
-                    } else {
-                        System.out.println("Opción no válida.");
+                    System.out.println("\n╔══════════════════════════════════════════════╗");
+                    System.out.println("║       ESTUDIANTES ASIGNADOS POR PBM          ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
+                    MinHeap<Estudiante> copia = minHeap.clonar();
+                    boolean hayAsignados = false;
+                    while (!copia.isEmpty()) {
+                        Estudiante e = copia.ExtractMin();
+                        if (e.getHasResidency()) {
+                            System.out.println("  " + e);
+                            hayAsignados = true;
+                        }
+                    }
+                    if (!hayAsignados) {
+                        System.out.println("  No hay estudiantes con residencia asignada.");
                     }
                 }
 
                 case 0 -> {
-                    System.out.println("Saliendo del sistema...");
+                    System.out.println("\n  Saliendo del sistema...");
+                    System.out.println("╔══════════════════════════════════════════════╗");
+                    System.out.println("║            ¡Hasta luego!                     ║");
+                    System.out.println("╚══════════════════════════════════════════════╝");
                     salir = true;
                 }
 
-                default -> System.out.println("Opción no válida.");
+                default -> System.out.println("  !! Opción no válida.");
             }
         }
         sc.close();
     }
 }
-
