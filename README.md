@@ -72,5 +72,4 @@ java Menu
 ## Notas
 
 - Al iniciar el sistema se cargan automáticamente 50 estudiantes de prueba con datos aleatorios (IDs 1000–1049).
-- Los benchmarks miden las operaciones principales con tamaños de entrada de 10.000, 100.000 y 1.000.000 elementos.
 - Se requiere Java 21 o superior para compilar y ejecutar el proyecto.
