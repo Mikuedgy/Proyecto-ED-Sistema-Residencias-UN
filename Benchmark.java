@@ -49,19 +49,15 @@ public class Benchmark {
                 }
                 totalSearch += System.nanoTime() - start;
  
-                // ── DELETE ──────────────────────────────────────────────────
-                // Se usa una copia del árbol para no afectar el árbol principal.
-                // Se eliminan IDs en orden secuencial para garantizar que cada
-                // uno existe al momento de borrarse (sin búsquedas fantasma,
-                // sin reinsertar, midiendo solo el costo real del delete).
-                AVLTree<Estudiante> avlParaDelete = new AVLTree<>();
-                for (int i = 0; i < N; i++) {
-                    avlParaDelete.insert(new Estudiante("est" + i, ids[i], rand.nextDouble() * 100));
-                }
+                // medir DELETE — eliminar y reinsertar para mantener tamaño N
                 start = System.nanoTime();
                 for (int i = 0; i < N; i++) {
-                    Estudiante e = avlParaDelete.searchById(ids[i]); // siempre existe
-                    if (e != null) avlParaDelete.delete(e);
+                    long id = ids[rand.nextInt(N)];
+                    Estudiante e = avl.searchById(id);
+                    if (e != null) {
+                        avl.delete(e);
+                        avl.insert(e); // reinsertar para mantener N constante
+                    }
                 }
                 totalDelete += System.nanoTime() - start;
             }
