@@ -2,125 +2,317 @@ import java.util.Random;
 
 public class Benchmark {
 
-    static final int[] SIZES = {10_000, 100_000, 250_000, 500_000, 750_000, 1_000_000};
+    static final int[] SIZES = {
+            10_000,
+            100_000,
+            250_000,
+            500_000,
+            750_000,
+            1_000_000
+    };
+
+    // Operaciones para métodos O(log n)
+    static final int TEST_OPS_LOG = 100_000;
+
+    // Operaciones para métodos O(n)
+    static final int TEST_OPS_LINEAR = 500;
+
+    // Repeticiones completas
     static final int REPETITIONS = 5;
-    static final int TEST_OPS = 100; // Número de operaciones para promediar el costo en tamaño N
+
     static final Random rand = new Random(42);
 
     public static void main(String[] args) {
+
         System.out.println("=====================================================");
-        System.out.println("   BENCHMARK CORREGIDO - Costo unitario en tamaño N");
+        System.out.println("      BENCHMARK MEJORADO - AVL vs MIN HEAP");
         System.out.println("=====================================================");
 
         benchmarkAVL();
         benchmarkMinHeap();
     }
 
-    // ─────────────────────────────────────────────
-    //  AVL TREE
-    // ─────────────────────────────────────────────
+    // =========================================================
+    // AVL TREE
+    // =========================================================
     static void benchmarkAVL() {
-        System.out.println("\n--- AVLTree (Tiempos por operación individual en ms) ---");
-        System.out.printf("%-12s %-20s %-20s %-20s%n",
-                "N", "Insert (ms)", "Search (ms)", "Delete (ms)");
+
+        System.out.println("\n--- AVLTree (Tiempo promedio por operación en ms) ---");
+
+        System.out.printf(
+                "%-12s %-20s %-20s %-20s%n",
+                "N",
+                "Insert (ms)",
+                "Search (ms)",
+                "Delete (ms)"
+        );
 
         for (int N : SIZES) {
-            double totalInsertTime = 0;
-            double totalSearchTime = 0;
-            double totalDeleteTime = 0;
+
+            double totalInsert = 0;
+            double totalSearch = 0;
+            double totalDelete = 0;
 
             for (int rep = 0; rep < REPETITIONS; rep++) {
+
                 AVLTree<Estudiante> avl = new AVLTree<>();
 
-                // 1. PREPARACIÓN: Llenar el árbol hasta N sin medir tiempo
+                // =================================================
+                // LLENAR AVL SIN MEDIR
+                // =================================================
                 for (int i = 0; i < N; i++) {
-                    avl.insert(new Estudiante("est" + i, i, rand.nextDouble() * 100));
+
+                    avl.insert(
+                            new Estudiante(
+                                    "est" + i,
+                                    i,
+                                    rand.nextDouble() * 100
+                            )
+                    );
                 }
 
-                // 2. MEDICIÓN INSERT: Medimos solo TEST_OPS inserciones adicionales sobre el tamaño N
-                long start = System.nanoTime();
-                for (int i = 0; i < TEST_OPS; i++) {
-                    avl.insert(new Estudiante("extra", N + i, 50.0));
-                }
-                totalInsertTime += (System.nanoTime() - start) / (double) TEST_OPS;
+                // =================================================
+                // WARMUP JVM
+                // =================================================
+                for (int i = 0; i < 20_000; i++) {
 
-                // 3. MEDICIÓN SEARCH: Medimos TEST_OPS búsquedas aleatorias
-                start = System.nanoTime();
-                for (int i = 0; i < TEST_OPS; i++) {
                     avl.searchById(rand.nextInt(N));
                 }
-                totalSearchTime += (System.nanoTime() - start) / (double) TEST_OPS;
 
-                // 4. MEDICIÓN DELETE: Medimos TEST_OPS eliminaciones
-                start = System.nanoTime();
-                for (int i = 0; i < TEST_OPS; i++) {
-                    avl.delete(new Estudiante("", i, 0)); // Asumiendo que el ID basta para el delete
+                // =================================================
+                // PRECREAR INSERTS
+                // =================================================
+                Estudiante[] insertStudents =
+                        new Estudiante[TEST_OPS_LOG];
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    insertStudents[i] = new Estudiante(
+                            "extra" + i,
+                            N + i,
+                            50.0
+                    );
                 }
-                totalDeleteTime += (System.nanoTime() - start) / (double) TEST_OPS;
+
+                // =================================================
+                // MEDICIÓN INSERT
+                // =================================================
+                long start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    avl.insert(insertStudents[i]);
+                }
+
+                long end = System.nanoTime();
+
+                totalInsert +=
+                        (end - start) / (double) TEST_OPS_LOG;
+
+                // =================================================
+                // MEDICIÓN SEARCH
+                // =================================================
+                start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    avl.searchById(rand.nextInt(N));
+                }
+
+                end = System.nanoTime();
+
+                totalSearch +=
+                        (end - start) / (double) TEST_OPS_LOG;
+
+                // =================================================
+                // PRECREAR DELETES
+                // =================================================
+                Estudiante[] deleteStudents =
+                        new Estudiante[TEST_OPS_LOG];
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    deleteStudents[i] = new Estudiante(
+                            "",
+                            i,
+                            0
+                    );
+                }
+
+                // =================================================
+                // MEDICIÓN DELETE
+                // =================================================
+                start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    avl.delete(deleteStudents[i]);
+                }
+
+                end = System.nanoTime();
+
+                totalDelete +=
+                        (end - start) / (double) TEST_OPS_LOG;
             }
 
-            // Promedio de las repeticiones convertido a milisegundos
-            double avgInsert = (totalInsertTime / REPETITIONS) / 1_000_000.0;
-            double avgSearch = (totalSearchTime / REPETITIONS) / 1_000_000.0;
-            double avgDelete = (totalDeleteTime / REPETITIONS) / 1_000_000.0;
+            double avgInsert =
+                    (totalInsert / REPETITIONS) / 1_000_000.0;
 
-            System.out.printf("%-12d %-20.6f %-20.6f %-20.6f%n",
-                    N, avgInsert, avgSearch, avgDelete);
+            double avgSearch =
+                    (totalSearch / REPETITIONS) / 1_000_000.0;
+
+            double avgDelete =
+                    (totalDelete / REPETITIONS) / 1_000_000.0;
+
+            System.out.printf(
+                    "%-12d %-20.6f %-20.6f %-20.6f%n",
+                    N,
+                    avgInsert,
+                    avgSearch,
+                    avgDelete
+            );
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  MIN HEAP
-    // ─────────────────────────────────────────────
+    // =========================================================
+    // MIN HEAP
+    // =========================================================
     static void benchmarkMinHeap() {
-        System.out.println("\n--- MinHeap (Tiempos por operación individual en ms) ---");
-        System.out.printf("%-12s %-20s %-20s %-20s%n",
-                "N", "Insert (ms)", "ExtractMin (ms)", "RemoveO(n) (ms)");
+
+        System.out.println("\n--- MinHeap (Tiempo promedio por operación en ms) ---");
+
+        System.out.printf(
+                "%-12s %-20s %-20s %-20s%n",
+                "N",
+                "Insert (ms)",
+                "ExtractMin (ms)",
+                "RemoveO(n) (ms)"
+        );
 
         for (int N : SIZES) {
-            double totalInsertTime = 0;
-            double totalExtractTime = 0;
-            double totalRemoveTime = 0;
+
+            double totalInsert = 0;
+            double totalExtract = 0;
+            double totalRemove = 0;
 
             for (int rep = 0; rep < REPETITIONS; rep++) {
+
                 MinHeap<Estudiante> heap = new MinHeap<>();
 
-                // 1. PREPARACIÓN: Llenar el Heap hasta N
+                // =================================================
+                // LLENAR HEAP SIN MEDIR
+                // =================================================
                 for (int i = 0; i < N; i++) {
-                    heap.Insert(new Estudiante("est" + i, i, rand.nextDouble() * 100));
+
+                    heap.Insert(
+                            new Estudiante(
+                                    "est" + i,
+                                    i,
+                                    rand.nextDouble() * 100
+                            )
+                    );
                 }
 
-                // 2. MEDICIÓN INSERT
-                long start = System.nanoTime();
-                for (int i = 0; i < TEST_OPS; i++) {
-                    heap.Insert(new Estudiante("extra", N + i, 50.0));
-                }
-                totalInsertTime += (System.nanoTime() - start) / (double) TEST_OPS;
+                // =================================================
+                // WARMUP JVM
+                // =================================================
+                for (int i = 0; i < 20_000; i++) {
 
-                // 3. MEDICIÓN EXTRACT MIN
-                start = System.nanoTime();
-                for (int i = 0; i < TEST_OPS; i++) {
                     heap.ExtractMin();
                 }
-                totalExtractTime += (System.nanoTime() - start) / (double) TEST_OPS;
 
-                // 4. MEDICIÓN REMOVE (O(n)): Esta es la que más le preocupa al profe
-                // Buscamos un elemento que probablemente esté al final para ver el peor caso de O(n)
-                start = System.nanoTime();
-                for (int i = 0; i < TEST_OPS; i++) {
-                    // Buscamos un ID que sepamos que existe en la estructura llena
-                    heap.removeByEstudiante(new Estudiante("", N - i - 1, 0));
+                // =================================================
+                // PRECREAR INSERTS
+                // =================================================
+                Estudiante[] insertStudents =
+                        new Estudiante[TEST_OPS_LOG];
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    insertStudents[i] = new Estudiante(
+                            "extra" + i,
+                            N + i,
+                            50.0
+                    );
                 }
-                totalRemoveTime += (System.nanoTime() - start) / (double) TEST_OPS;
+
+                // =================================================
+                // MEDICIÓN INSERT
+                // =================================================
+                long start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    heap.Insert(insertStudents[i]);
+                }
+
+                long end = System.nanoTime();
+
+                totalInsert +=
+                        (end - start) / (double) TEST_OPS_LOG;
+
+                // =================================================
+                // MEDICIÓN EXTRACT MIN
+                // =================================================
+                start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    heap.ExtractMin();
+                }
+
+                end = System.nanoTime();
+
+                totalExtract +=
+                        (end - start) / (double) TEST_OPS_LOG;
+
+                // =================================================
+                // PRECREAR REMOVES
+                // =================================================
+                Estudiante[] removeStudents =
+                        new Estudiante[TEST_OPS_LINEAR];
+
+                for (int i = 0; i < TEST_OPS_LINEAR; i++) {
+
+                    removeStudents[i] = new Estudiante(
+                            "",
+                            N - i - 1,
+                            0
+                    );
+                }
+
+                // =================================================
+                // MEDICIÓN REMOVE O(n)
+                // =================================================
+                start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LINEAR; i++) {
+
+                    heap.removeByEstudiante(removeStudents[i]);
+                }
+
+                end = System.nanoTime();
+
+                totalRemove +=
+                        (end - start) / (double) TEST_OPS_LINEAR;
             }
 
-            double avgInsert = (totalInsertTime / REPETITIONS) / 1_000_000.0;
-            double avgExtract = (totalExtractTime / REPETITIONS) / 1_000_000.0;
-            double avgRemove = (totalRemoveTime / REPETITIONS) / 1_000_000.0;
+            double avgInsert =
+                    (totalInsert / REPETITIONS) / 1_000_000.0;
 
-            System.out.printf("%-12d %-20.6f %-20.6f %-20.6f%n",
-                    N, avgInsert, avgExtract, avgRemove);
+            double avgExtract =
+                    (totalExtract / REPETITIONS) / 1_000_000.0;
+
+            double avgRemove =
+                    (totalRemove / REPETITIONS) / 1_000_000.0;
+
+            System.out.printf(
+                    "%-12d %-20.6f %-20.6f %-20.6f%n",
+                    N,
+                    avgInsert,
+                    avgExtract,
+                    avgRemove
+            );
         }
     }
 }
-
