@@ -2,10 +2,9 @@ import java.util.Random;
 
 public class Benchmark {
 
-    // Añadimos puntos intermedios para que la gráfica sea más clara
     static final int[] SIZES = {10_000, 100_000, 250_000, 500_000, 750_000, 1_000_000};
     static final int REPETITIONS = 5;
-    static final int TEST_OPS = 100; // Mediremos el tiempo de 100 ops para promediar 1
+    static final int TEST_OPS = 100;
     static final Random rand = new Random(42);
 
     public static void main(String[] args) {
@@ -13,17 +12,25 @@ public class Benchmark {
         System.out.println("   BENCHMARK - AVLTree y MinHeap");
         System.out.println("========================================");
 
+        // --- NOVEDAD: CALENTAMIENTO DE LA JVM ---
+        // Corremos una prueba pequeña sin imprimir para que Java optimice el código
+        System.out.print("Calentando motores (JVM Warm-up)... ");
+        warmup();
+        System.out.println("¡Listo!\n");
+
         benchmarkAVL();
         benchmarkMinHeap();
     }
 
-    // ─────────────────────────────────────────────
-    //  AVL TREE
-    // ─────────────────────────────────────────────
+    private static void warmup() {
+        AVLTree<Estudiante> tree = new AVLTree<>();
+        for (int i = 0; i < 5000; i++) tree.insert(new Estudiante("w", (long)i, 0));
+        for (int i = 0; i < 1000; i++) tree.searchById((long)i);
+    }
+
     static void benchmarkAVL() {
-        System.out.println("\n--- AVLTree (Tiempos por operación individual en ms) ---");
-        System.out.printf("%-12s %-15s %-15s %-15s%n",
-            "N", "Insert (ms)", "Search (ms)", "Delete (ms)");
+        System.out.println("--- AVLTree (Costo Unitario Estable) ---");
+        System.out.printf("%-12s %-15s %-15s %-15s%n", "N", "Insert (ms)", "Search (ms)", "Delete (ms)");
 
         for (int N : SIZES) {
             double totalInsertTime = 0;
@@ -32,41 +39,42 @@ public class Benchmark {
 
             for (int rep = 0; rep < REPETITIONS; rep++) {
                 AVLTree<Estudiante> avl = new AVLTree<>();
-
-                // 1. PREPARACIÓN: Llenamos hasta N (sin medir)
+                
+                // --- NOVEDAD: CONTROL DE IDs ---
+                // Pre-generamos IDs para asegurar que siempre buscamos algo que EXISTE
+                long[] existingIds = new long[N];
                 for (int i = 0; i < N; i++) {
+                    existingIds[i] = i;
                     avl.insert(new Estudiante("est" + i, (long)i, rand.nextDouble() * 100));
                 }
 
-                // 2. MEDICIÓN INSERT: Medimos TEST_OPS inserciones extra
+                // MEDICIÓN INSERT (Costo de añadir al árbol ya lleno)
                 long start = System.nanoTime();
                 for (int i = 0; i < TEST_OPS; i++) {
                     avl.insert(new Estudiante("extra", (long)(N + i), 50.0));
                 }
                 totalInsertTime += (System.nanoTime() - start) / (double) TEST_OPS;
 
-                // 3. MEDICIÓN SEARCH: 100 búsquedas aleatorias sobre N
+                // MEDICIÓN SEARCH (Ahora garantizamos que el ID existe en el set de N)
                 start = System.nanoTime();
                 for (int i = 0; i < TEST_OPS; i++) {
-                    avl.searchById((long)rand.nextInt(N));
+                    avl.searchById(existingIds[rand.nextInt(N)]);
                 }
                 totalSearchTime += (System.nanoTime() - start) / (double) TEST_OPS;
 
-                // 4. MEDICIÓN DELETE: 100 eliminaciones
+                // MEDICIÓN DELETE (Eliminamos elementos reales del set)
                 start = System.nanoTime();
                 for (int i = 0; i < TEST_OPS; i++) {
-                    avl.delete(new Estudiante("", (long)i, 0));
+                    avl.delete(new Estudiante("", existingIds[i], 0));
                 }
                 totalDeleteTime += (System.nanoTime() - start) / (double) TEST_OPS;
             }
 
-            // Promediamos las repeticiones y convertimos a milisegundos
-            double avgInsert = (totalInsertTime / REPETITIONS) / 1_000_000.0;
-            double avgSearch = (totalSearchTime / REPETITIONS) / 1_000_000.0;
-            double avgDelete = (totalDeleteTime / REPETITIONS) / 1_000_000.0;
-
-            System.out.printf("%-12d %-15.6f %-15.6f %-15.6f%n",
-                N, avgInsert, avgSearch, avgDelete);
+            // Impresión con alta precisión (6 decimales)
+            System.out.printf("%-12d %-15.6f %-15.6f %-15.6f%n", N, 
+                (totalInsertTime/REPETITIONS)/1e6, 
+                (totalSearchTime/REPETITIONS)/1e6, 
+                (totalDeleteTime/REPETITIONS)/1e6);
         }
     }
 
