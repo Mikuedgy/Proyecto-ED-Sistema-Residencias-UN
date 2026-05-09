@@ -11,10 +11,10 @@ public class Benchmark {
             1_000_000
     };
 
-    // Operaciones para métodos O(log n)
+    // Número de operaciones por prueba para métodos O(log n)
     static final int TEST_OPS_LOG = 100_000;
 
-    // Operaciones para métodos O(n)
+    // Número de operaciones por prueba para métodos O(n)
     static final int TEST_OPS_LINEAR = 500;
 
     // Repeticiones completas
@@ -60,6 +60,8 @@ public class Benchmark {
                 // =================================================
                 // LLENAR AVL SIN MEDIR
                 // =================================================
+
+                // Se llena con N elementos antes de medir 
                 for (int i = 0; i < N; i++) {
 
                     avl.insert(
@@ -74,6 +76,7 @@ public class Benchmark {
                 // =================================================
                 // WARMUP JVM
                 // =================================================
+                // Compila el código antes de medir para que los tiempos no estén sesgados
                 for (int i = 0; i < 20_000; i++) {
 
                     avl.searchById(rand.nextInt(N));
@@ -82,6 +85,7 @@ public class Benchmark {
                 // =================================================
                 // PRECREAR INSERTS
                 // =================================================
+                // Objetos se precrean fuera del bloque de medición para no contaminar el resultado
                 Estudiante[] insertStudents =
                         new Estudiante[TEST_OPS_LOG];
 
@@ -202,6 +206,8 @@ public class Benchmark {
                 // =================================================
                 // LLENAR HEAP SIN MEDIR
                 // =================================================
+
+                // Se llena con N elementos antes de medir 
                 for (int i = 0; i < N; i++) {
 
                     heap.Insert(
