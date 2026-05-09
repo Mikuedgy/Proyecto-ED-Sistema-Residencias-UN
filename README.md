@@ -64,13 +64,17 @@ Proyecto-ED-Sistema-Residencias-UN/
 git clone https://github.com/Mikuedgy/Proyecto-ED-Sistema-Residencias-UN.git
 ```
 
-2. Ejecutar el sistema:
+2. Compilar el proyecto:
 ```bash
 javac *.java
+```
+
+3. Ejecutar el sistema:
+```bash
 java -cp . Menu
 ```
 
-3. (Opcional) Ejecutar el Benchmark:
+4. (Opcional) Ejecutar el Benchmark:
 ```bash
 java -cp . Benchmark
 ```
