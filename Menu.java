@@ -78,10 +78,14 @@ public class Menu {
                         String nombre = sc.nextLine().trim();
                         System.out.print("  PBM: ");
                         double pbm = Double.parseDouble(sc.nextLine().trim());
+                        if (pbm < 0 || pbm > 100) {
+                            System.out.println("  !! El PBM debe estar entre 0 y 100.");
+                        } else {
                         Estudiante e = new Estudiante(nombre, id, pbm);
                         avl.insert(e);
                         minHeap.Insert(e);
                         System.out.println("  !! Estudiante registrado correctamente.");
+                        }
                     }
                 }
 
@@ -167,10 +171,14 @@ public class Menu {
                     if (e != null) {
                         System.out.print("  Nuevo PBM: ");
                         double nuevoPbm = Double.parseDouble(sc.nextLine().trim());
+                        if (nuevoPbm < 0 || nuevoPbm > 100) {
+                            System.out.println("  !! El PBM debe estar entre 0 y 100.");
+                        } else {
                         minHeap.removeByEstudiante(e);
                         e.setPbm(nuevoPbm);
                         minHeap.Insert(e);
                         System.out.println("  !! PBM actualizado a: " + nuevoPbm);
+                        }
                     } else {
                         System.out.println("  !! Estudiante no encontrado.");
                     }
