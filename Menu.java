@@ -75,15 +75,31 @@ public class Menu {
                     System.out.println("\n╔══════════════════════════════════════════════╗");
                     System.out.println("║         REGISTRAR ESTUDIANTE                 ║");
                     System.out.println("╚══════════════════════════════════════════════╝");
+                    
                     System.out.print("  ID: ");
-                    long id = Long.parseLong(sc.nextLine().trim());
+                    long id;
+                    try {
+                        id = Long.parseLong(sc.nextLine().trim());
+                    } catch (NumberFormatException ex) {
+                        System.out.println("  !! ID inválido. Ingrese solo números.");
+                        break;
+                    }
+                    
                     if (avl.searchById(id) != null) {
                         System.out.println("  !! Ya existe un estudiante con ese ID.");
                     } else {
                         System.out.print("  Nombre: ");
                         String nombre = sc.nextLine().trim();
+                        
                         System.out.print("  PBM: ");
-                        double pbm = Double.parseDouble(sc.nextLine().trim());
+                        double pbm;
+                        try {
+                             pbm = Double.parseDouble(sc.nextLine().trim());
+                        } catch (NumberFormatException ex) {
+                            System.out.println("  !! PBM inválido. Ingrese un número.");
+                            break;
+                        }
+                        
                         if (pbm < 0 || pbm > 100) {
                             System.out.println("  !! El PBM debe estar entre 0 y 100.");
                         } else {
@@ -99,8 +115,16 @@ public class Menu {
                     System.out.println("\n╔══════════════════════════════════════════════╗");
                     System.out.println("║         ACTUALIZAR CUPOS                     ║");
                     System.out.println("╚══════════════════════════════════════════════╝");
+                    
                     System.out.print("  Ingrese cantidad de cupos: ");
-                    int cuposn = Integer.parseInt(sc.nextLine().trim());
+                    int cuposn;
+                    try {
+                        cuposn = Integer.parseInt(sc.nextLine().trim());
+                    } catch (NumberFormatException e) {
+                        System.out.println("  !! Valor inválido. Ingrese un número entero.");
+                        break;
+                    }
+                    
                     if (cuposn < 0) {
                         System.out.println("  !! La cantidad de cupos no puede ser negativa.");
                     } else {
@@ -141,8 +165,16 @@ public class Menu {
                     System.out.println("\n╔══════════════════════════════════════════════╗");
                     System.out.println("║         CONSULTAR ESTUDIANTE                 ║");
                     System.out.println("╚══════════════════════════════════════════════╝");
+                    
                     System.out.print("  Ingrese ID: ");
-                    long id = Long.parseLong(sc.nextLine().trim());
+                    long id;
+                    try {
+                        id = Long.parseLong(sc.nextLine().trim());
+                    } catch (NumberFormatException ex) { 
+                        System.out.println("  !! ID inválido. Ingrese solo números.");
+                        break;
+                    }
+                    
                     Estudiante e = avl.searchById(id);
                     if (e != null) {
                         System.out.println("  " + e);
@@ -155,8 +187,16 @@ public class Menu {
                     System.out.println("\n╔══════════════════════════════════════════════╗");
                     System.out.println("║         ELIMINAR ESTUDIANTE                  ║");
                     System.out.println("╚══════════════════════════════════════════════╝");
+                   
                     System.out.print("  Ingrese ID: ");
-                    long id = Long.parseLong(sc.nextLine().trim());
+                    long id;
+                    try {
+                        id = Long.parseLong(sc.nextLine().trim());
+                    } catch (NumberFormatException ex) { 
+                        System.out.println("  !! ID inválido. Ingrese solo números.");
+                        break;
+                    }
+                    
                     Estudiante e = avl.searchById(id);
                     if (e != null) {
                         avl.delete(e);
@@ -171,12 +211,28 @@ public class Menu {
                     System.out.println("\n╔══════════════════════════════════════════════╗");
                     System.out.println("║         ACTUALIZAR PBM                       ║");
                     System.out.println("╚══════════════════════════════════════════════╝");
+                    
                     System.out.print("  Ingrese ID: ");
-                    long id = Long.parseLong(sc.nextLine().trim());
+                     long id;
+                    try {
+                        id = Long.parseLong(sc.nextLine().trim());
+                    } catch (NumberFormatException ex) { 
+                        System.out.println("  !! ID inválido. Ingrese solo números.");
+                        break;
+                    }
+                    
                     Estudiante e = avl.searchById(id);
                     if (e != null) {
+                        
                         System.out.print("  Nuevo PBM: ");
-                        double nuevoPbm = Double.parseDouble(sc.nextLine().trim());
+                        double nuevoPbm;
+                        try {
+                            nuevoPbm = Double.parseDouble(sc.nextLine().trim());
+                        } catch (NumberFormatException ex) {
+                            System.out.println("  !! PBM inválido. Ingrese un número.");
+                             break;
+                        }
+                        
                         if (nuevoPbm < 0 || nuevoPbm > 100) {
                             System.out.println("  !! El PBM debe estar entre 0 y 100.");
                         } else {
