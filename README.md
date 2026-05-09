@@ -66,10 +66,16 @@ git clone https://github.com/Mikuedgy/Proyecto-ED-Sistema-Residencias-UN.git
 
 2. Ejecutar el sistema:
 ```bash
-java Menu
+javac *.java
+java -cp . Menu
 ```
 
+3. (Opcional) Ejecutar el Benchmark:
+```bash
+java -cp . Benchmark
+```
 ## Notas
 
 - Al iniciar el sistema se cargan automáticamente 50 estudiantes de prueba con datos aleatorios (IDs 1000–1049).
 - Se requiere Java 21 o superior para compilar y ejecutar el proyecto.
+- El Benchmark prueba las operaciones principales con 10.000, 100.000 y 1.000.000 de elementos, repitiendo cada prueba 5 veces para promediar resultados.
