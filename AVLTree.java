@@ -136,7 +136,7 @@ public class AVLTree <T extends Comparable<T>> {
         }
 
         adjustHeight(node);
-        return node;
+        return rebalance(node);
     }
 
     private Node rebalance(Node node) {
