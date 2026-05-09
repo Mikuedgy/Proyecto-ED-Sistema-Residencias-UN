@@ -62,7 +62,13 @@ public class Menu {
             System.out.println("╚══════════════════════════════════════════════╝");
             System.out.print("Seleccione una opción: ");
 
-            int opcion = Integer.parseInt(sc.nextLine().trim());
+            int opcion;
+            try {
+                opcion = Integer.parseInt(sc.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("  !! Entrada inválida. Ingrese un número.");
+                continue;
+            }
 
             switch (opcion) {
                 case 1 -> {
