@@ -3,12 +3,14 @@ public class MinHeap<T extends Comparable<T>> {
     private T[] heap;
     private int size;
     private int capacity;
+    private HashMap idToIndex;
 
     @SuppressWarnings("unchecked")//(compilador omite warningns en la cosola)
     public MinHeap() {
         this.capacity = 16;
         this.heap = (T[]) new Comparable[capacity];
         this.size = 0;
+        this.idToIndex = new HashMap(); // Enlace con HashMap para eliminar por id en O(log n)
     }
     ////////////////////////////////////////// ----> METODOS EXTRA PROYECTO
     
@@ -28,13 +30,10 @@ public class MinHeap<T extends Comparable<T>> {
         heap = nuevo;
     }
 
-    public void removeByEstudiante(Estudiante target) { // O(n) - busqueda lineal necesaria para buscar ID
-        for (int i = 0; i < size; i++) {
-            Estudiante e = (Estudiante) heap[i];
-            if (e.getId() == target.getId()) {
-                remove(i);
-                return;
-            }
+    public void removeByEstudiante(Estudiante target) { // O(log n) - gracias al HashMap
+        Integer idx = idToIndex.get(target.getId());
+        if (idx != null) {
+            remove(idx);
         }
     }
 
@@ -42,8 +41,11 @@ public class MinHeap<T extends Comparable<T>> {
 
     public void ChangePriority(int i, T newValue) {
         if (i < 0 || i >= size) return;
-        double oldPbm = ((Estudiante) heap[i]).getPbm();
+        Estudiante old = (Estudiante) heap[i];
+        idToIndex.remove(old.getId());
         heap[i] = newValue;
+        idToIndex.put(((Estudiante) newValue).getId(), i);
+        double oldPbm = old.getPbm();
         double newPbm = ((Estudiante) newValue).getPbm();
         if (newPbm < oldPbm) siftUp(i);
         else siftDown(i);
@@ -51,10 +53,12 @@ public class MinHeap<T extends Comparable<T>> {
 
     public void remove(int i) {
         if (i < 0 || i >= size) return;
+        idToIndex.remove(((Estudiante) heap[i]).getId());
         size--;
         heap[i] = heap[size];
         heap[size] = null;
         if (i < size) {
+            idToIndex.put(((Estudiante) heap[i]).getId(), i);
             siftUp(i);
             siftDown(i);
         }
@@ -78,21 +82,30 @@ public class MinHeap<T extends Comparable<T>> {
     public T ExtractMin() {
         if (size == 0) return null;
         T min = heap[0];
+        idToIndex.remove(((Estudiante) min).getId());
         size--;
         heap[0] = heap[size];
         heap[size] = null;
-        if (size > 0) siftDown(0);
+        if (size > 0) {
+            idToIndex.put(((Estudiante) heap[0]).getId(), 0);
+            siftDown(0);
+        }
         return min;
     }
 
     public void Insert(T element) {
         if (size == capacity) resize();
         heap[size] = element;
+        idToIndex.put(((Estudiante) element).getId(), size);
         siftUp(size);
         size++;
     }
 
     private void swap(int a, int b) {
+        Estudiante ea = (Estudiante) heap[a];
+        Estudiante eb = (Estudiante) heap[b];
+        idToIndex.put(ea.getId(), b);
+        idToIndex.put(eb.getId(), a);
         T temp = heap[a];
         heap[a] = heap[b];
         heap[b] = temp;
