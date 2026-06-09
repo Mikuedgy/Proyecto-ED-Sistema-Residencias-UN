@@ -9,7 +9,6 @@ public class HashMap {
         this.size = 0;
     }
 
-    ////////////////////////////////////////// ----> CLASE INTERNA NODO
     private static class Node {
         long key;
         int value;
@@ -23,12 +22,11 @@ public class HashMap {
 
 
     ////////////////////////////////////////// ----> METODOS PROPIOS DE HASHMAP
-    //FUNCION HASH
+    
     private int hash(long key) {
-        return (int) (key % buckets.length);
+        return (int) (key % buckets.length); 
     }
 
-    //INSERTAR O ACTUALIZAR
     public void put(long key, int value) {
         int idx = hash(key);
         Node actual = buckets[idx];
@@ -48,7 +46,6 @@ public class HashMap {
         }
     }
 
-    //OBTENER VALOR POR CLAVE
     public Integer get(long key) {
         int idx = hash(key);
         Node actual = buckets[idx];
@@ -61,7 +58,6 @@ public class HashMap {
         return null;
     }
 
-    //ELIMINAR POR CLAVE
     public void remove(long key) {
         int idx = hash(key);
         Node actual = buckets[idx];
@@ -81,7 +77,6 @@ public class HashMap {
         }
     }
 
-    //REDIMENSIONAR
     @SuppressWarnings("unchecked")
     private void resize() {
         Node[] oldBuckets = buckets;

@@ -25,11 +25,12 @@ public class Benchmark {
     public static void main(String[] args) {
 
         System.out.println("=====================================================");
-        System.out.println("      BENCHMARK MEJORADO - AVL vs MIN HEAP");
+        System.out.println("      BENCHMARK MEJORADO - AVL vs MIN HEAP vs HASHMAP");
         System.out.println("=====================================================");
 
         benchmarkAVL();
         benchmarkMinHeap();
+        benchmarkHashMap();
     }
 
     // =========================================================
@@ -317,6 +318,136 @@ public class Benchmark {
                     N,
                     avgInsert,
                     avgExtract,
+                    avgRemove
+            );
+        }
+    }
+
+    // =========================================================
+    // HASHMAP
+    // =========================================================
+    static void benchmarkHashMap() {
+
+        System.out.println("\n--- HashMap (Tiempo promedio por operación en ms) ---");
+
+        System.out.printf(
+                "%-12s %-20s %-20s %-20s%n",
+                "N",
+                "Put (ms)",
+                "Get (ms)",
+                "Remove (ms)"
+        );
+
+        for (int N : SIZES) {
+
+            double totalPut = 0;
+            double totalGet = 0;
+            double totalRemove = 0;
+
+            for (int rep = 0; rep < REPETITIONS; rep++) {
+
+                HashMap map = new HashMap();
+
+                // =================================================
+                // LLENAR HASHMAP SIN MEDIR
+                // =================================================
+
+                // Se llena con N elementos antes de medir
+                for (int i = 0; i < N; i++) {
+
+                    map.put(i, rand.nextInt(1000));
+                }
+
+                // =================================================
+                // WARMUP JVM
+                // =================================================
+                for (int i = 0; i < 20_000; i++) {
+
+                    map.get(rand.nextInt(N));
+                }
+
+                // =================================================
+                // PRECREAR PUTS
+                // =================================================
+                long[] putKeys = new long[TEST_OPS_LOG];
+                int[] putValues = new int[TEST_OPS_LOG];
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    putKeys[i] = N + i;
+                    putValues[i] = rand.nextInt(1000);
+                }
+
+                // =================================================
+                // MEDICIÓN PUT
+                // =================================================
+                long start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    map.put(putKeys[i], putValues[i]);
+                }
+
+                long end = System.nanoTime();
+
+                totalPut +=
+                        (end - start) / (double) TEST_OPS_LOG;
+
+                // =================================================
+                // MEDICIÓN GET
+                // =================================================
+                start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    map.get(rand.nextInt(N));
+                }
+
+                end = System.nanoTime();
+
+                totalGet +=
+                        (end - start) / (double) TEST_OPS_LOG;
+
+                // =================================================
+                // PRECREAR REMOVES
+                // =================================================
+                long[] removeKeys = new long[TEST_OPS_LOG];
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    removeKeys[i] = i;
+                }
+
+                // =================================================
+                // MEDICIÓN REMOVE
+                // =================================================
+                start = System.nanoTime();
+
+                for (int i = 0; i < TEST_OPS_LOG; i++) {
+
+                    map.remove(removeKeys[i]);
+                }
+
+                end = System.nanoTime();
+
+                totalRemove +=
+                        (end - start) / (double) TEST_OPS_LOG;
+            }
+
+            double avgPut =
+                    (totalPut / REPETITIONS) / 1_000_000.0;
+
+            double avgGet =
+                    (totalGet / REPETITIONS) / 1_000_000.0;
+
+            double avgRemove =
+                    (totalRemove / REPETITIONS) / 1_000_000.0;
+
+            System.out.printf(
+                    "%-12d %-20.6f %-20.6f %-20.6f%n",
+                    N,
+                    avgPut,
+                    avgGet,
                     avgRemove
             );
         }
