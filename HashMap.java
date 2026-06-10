@@ -24,7 +24,7 @@ public class HashMap {
     ////////////////////////////////////////// ----> METODOS PROPIOS DE HASHMAP
     
     private int hash(long key) {
-        return (int) (key % buckets.length); 
+        return (int) (key & (buckets.length - 1));
     }
 
     public void put(long key, int value) {
@@ -77,16 +77,17 @@ public class HashMap {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void resize() {
         Node[] oldBuckets = buckets;
         buckets = new Node[oldBuckets.length * 2];
-        size = 0;
         for (Node head : oldBuckets) {
             Node actual = head;
             while (actual != null) {
-                put(actual.key, actual.value);
-                actual = actual.next;
+                Node next = actual.next;
+                int idx = hash(actual.key);
+                actual.next = buckets[idx];
+                buckets[idx] = actual;
+                actual = next;
             }
         }
     }

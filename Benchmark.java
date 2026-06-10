@@ -348,90 +348,62 @@ public class Benchmark {
 
                 HashMap map = new HashMap();
 
-                // =================================================
-                // LLENAR HASHMAP SIN MEDIR
-                // =================================================
-
-                // Se llena con N elementos antes de medir
-                for (int i = 0; i < N; i++) {
-
+                // ── Llenar sin medir ────────────────────────────────────
+                for (int i = 0; i < N; i++)
                     map.put(i, rand.nextInt(1000));
-                }
 
-                // =================================================
-                // WARMUP JVM
-                // =================================================
-                for (int i = 0; i < 20_000; i++) {
+                // ── Pre-dimensionar: insertar y remover TEST_OPS_LOG   ──
+                //    elementos antes de medir, para que los resize no
+                //    contaminen la medición de PUT.
+                for (int i = 0; i < TEST_OPS_LOG; i++)
+                    map.put(N + i, 0);
+                for (int i = 0; i < TEST_OPS_LOG; i++)
+                    map.remove(N + i);
 
-                    map.get(rand.nextInt(N));
-                }
-
-                // =================================================
-                // PRECREAR PUTS
-                // =================================================
+                // ── Pre-crear PUT keys ──────────────────────────────────
                 long[] putKeys = new long[TEST_OPS_LOG];
                 int[] putValues = new int[TEST_OPS_LOG];
-
                 for (int i = 0; i < TEST_OPS_LOG; i++) {
-
                     putKeys[i] = N + i;
                     putValues[i] = rand.nextInt(1000);
                 }
 
-                // =================================================
-                // MEDICIÓN PUT
-                // =================================================
+                // ── Warmup PUT (compilar put vía JIT) ───────────────────
+                for (int i = 0; i < 20_000; i++) {
+                    map.put(N + TEST_OPS_LOG + i, 0);
+                    map.remove(N + TEST_OPS_LOG + i);
+                }
+
+                // ── Medición PUT ────────────────────────────────────────
                 long start = System.nanoTime();
-
-                for (int i = 0; i < TEST_OPS_LOG; i++) {
-
+                for (int i = 0; i < TEST_OPS_LOG; i++)
                     map.put(putKeys[i], putValues[i]);
-                }
-
                 long end = System.nanoTime();
+                totalPut += (end - start) / (double) TEST_OPS_LOG;
 
-                totalPut +=
-                        (end - start) / (double) TEST_OPS_LOG;
+                // ── Warmup GET sobre el mapa completo ───────────────────
+                int totalKeys = N + TEST_OPS_LOG;
+                for (int i = 0; i < 20_000; i++)
+                    map.get(rand.nextInt(totalKeys));
 
-                // =================================================
-                // MEDICIÓN GET
-                // =================================================
+                // ── Medición GET ────────────────────────────────────────
                 start = System.nanoTime();
-
-                for (int i = 0; i < TEST_OPS_LOG; i++) {
-
-                    map.get(rand.nextInt(N));
-                }
-
+                for (int i = 0; i < TEST_OPS_LOG; i++)
+                    map.get(rand.nextInt(totalKeys));
                 end = System.nanoTime();
+                totalGet += (end - start) / (double) TEST_OPS_LOG;
 
-                totalGet +=
-                        (end - start) / (double) TEST_OPS_LOG;
-
-                // =================================================
-                // PRECREAR REMOVES
-                // =================================================
+                // ── Medición REMOVE (ya viene caliente de warmups
+                //    anteriores, pero igual se compila en la 1ra rep) ──
                 long[] removeKeys = new long[TEST_OPS_LOG];
-
-                for (int i = 0; i < TEST_OPS_LOG; i++) {
-
+                for (int i = 0; i < TEST_OPS_LOG; i++)
                     removeKeys[i] = i;
-                }
 
-                // =================================================
-                // MEDICIÓN REMOVE
-                // =================================================
                 start = System.nanoTime();
-
-                for (int i = 0; i < TEST_OPS_LOG; i++) {
-
+                for (int i = 0; i < TEST_OPS_LOG; i++)
                     map.remove(removeKeys[i]);
-                }
-
                 end = System.nanoTime();
-
-                totalRemove +=
-                        (end - start) / (double) TEST_OPS_LOG;
+                totalRemove += (end - start) / (double) TEST_OPS_LOG;
             }
 
             double avgPut =
