@@ -10,7 +10,7 @@ public class MinHeap<T extends Comparable<T>> {
         this.capacity = 16;
         this.heap = (T[]) new Comparable[capacity];
         this.size = 0;
-        this.idToIndex = new HashMap(); // Enlace con HashMap para eliminar por id en O(log n)
+        this.idToIndex = new HashMap(); // Enlace con HashMap para buscar y eliminar por id en O(log n)
     }
     ////////////////////////////////////////// ----> METODOS EXTRA PROYECTO
     
