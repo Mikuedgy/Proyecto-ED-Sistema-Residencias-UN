@@ -50,11 +50,13 @@ Proyecto-ED-Sistema-Residencias-UN/
 │
 ├── README.md
 └── src/
-    ├── Estudiante.java      # Clase modelo del estudiante
-    ├── AVLTree.java         # Árbol AVL implementado manualmente
-    ├── MinHeap.java         # MinHeap implementado manualmente
-    ├── Menu.java            # Menú principal del sistema
-    └── Benchmark.java       # Medición de tiempos de ejecución
+    ├── Estudiante.java           # Clase modelo del estudiante
+    ├── AVLTree.java              # Árbol AVL implementado manualmente
+    ├── MinHeap.java              # MinHeap implementado manualmente
+    ├── HashMap.java              # HashMap auxiliar (para eliminar en el heap por ID)
+    ├── Menu.java                 # Menú principal por consola (CLI)
+    ├── InterfazResidencias.java  # Interfaz gráfica (Swing)
+    └── Benchmark.java            # Medición de tiempos de ejecución
 ```
 
 ## Guía de instalación
@@ -69,9 +71,10 @@ git clone https://github.com/Mikuedgy/Proyecto-ED-Sistema-Residencias-UN.git
 javac *.java
 ```
 
-3. Ejecutar el sistema:
+3. Ejecutar el sistema (elige una):
 ```bash
-java -cp . Menu
+java -cp . Menu                  # Interfaz de consola
+java -cp . InterfazResidencias   # Interfaz gráfica (Swing)
 ```
 
 4. (Opcional) Ejecutar el Benchmark:
