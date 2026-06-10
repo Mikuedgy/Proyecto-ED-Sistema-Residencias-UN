@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 public class AVLTree <T extends Comparable<T>> {
 
     private Node root;
@@ -16,7 +17,12 @@ public class AVLTree <T extends Comparable<T>> {
     }
 
     ////////////////////////////////////////// ----> METODOS EXTRA PROYECTO
-    
+
+    /** Retorna la altura real del árbol en O(1) usando el campo height del nodo raíz. */
+    public int getHeight() {
+        return root == null ? 0 : root.height;
+    }
+
     public T searchById(long id) {
         return searchByIdRec(root, id);
     }
@@ -48,7 +54,7 @@ public class AVLTree <T extends Comparable<T>> {
 
         printByResidencyRec(node.left, estado);
 
-        Estudiante e = (Estudiante) node.key;  
+        Estudiante e = (Estudiante) node.key;
         if (e.getHasResidency() == estado) {
             System.out.println(e);
         }
@@ -57,7 +63,7 @@ public class AVLTree <T extends Comparable<T>> {
     }
 
     ////////////////////////////////////////// ----> METODOS PROPIOS DE AVLTREE
-    
+
     public void insert(T key) {
         root = insert(root, key, null);
     }
@@ -96,18 +102,18 @@ public class AVLTree <T extends Comparable<T>> {
     }
 
     private Node insert(Node node, T key, Node parent) {
-    if (node == null) return new Node(key, parent);
+        if (node == null) return new Node(key, parent);
 
-    if (key.compareTo(node.key) < 0) {
-        node.left = insert(node.left, key, node);
-    } else if (key.compareTo(node.key) > 0) {
-        node.right = insert(node.right, key, node);
+        if (key.compareTo(node.key) < 0) {
+            node.left = insert(node.left, key, node);
+        } else if (key.compareTo(node.key) > 0) {
+            node.right = insert(node.right, key, node);
+        }
+
+        adjustHeight(node);
+        return rebalance(node);  // ← usar el resultado directamente
     }
 
-    adjustHeight(node);
-    return rebalance(node);  // ← usar el resultado directamente
-    }
-    
     private Node delete(Node node, T key) {//(version recursiva)
         if (node == null) return null;
 
@@ -140,42 +146,42 @@ public class AVLTree <T extends Comparable<T>> {
     }
 
     private Node rebalance(Node node) {
-    if (node == null) return null;
+        if (node == null) return null;
 
-    int leftHeight  = getHeight(node.left);
-    int rightHeight = getHeight(node.right);
+        int leftHeight  = getHeight(node.left);
+        int rightHeight = getHeight(node.right);
 
-    if (leftHeight > rightHeight + 1) {
-        return rebalanceRight(node);  // ← retornar
-    } else if (rightHeight > leftHeight + 1) {
-        return rebalanceLeft(node);   // ← retornar
+        if (leftHeight > rightHeight + 1) {
+            return rebalanceRight(node);  // ← retornar
+        } else if (rightHeight > leftHeight + 1) {
+            return rebalanceLeft(node);   // ← retornar
+        }
+
+        adjustHeight(node);
+        return node;  // ← retornar
     }
 
-    adjustHeight(node);
-    return node;  // ← retornar
-}
-
-private Node rebalanceRight(Node node) {
-    Node left = node.left;
-    if (getHeight(left.right) > getHeight(left.left)) {
-        node.left = rotateLeft(left);
-        node.left.parent = node;
+    private Node rebalanceRight(Node node) {
+        Node left = node.left;
+        if (getHeight(left.right) > getHeight(left.left)) {
+            node.left = rotateLeft(left);
+            node.left.parent = node;
+        }
+        Node newRoot = rotateRight(node);
+        if (newRoot.parent == null) root = newRoot;
+        return newRoot;  // ← retornar
     }
-    Node newRoot = rotateRight(node);
-    if (newRoot.parent == null) root = newRoot;
-    return newRoot;  // ← retornar
-}
 
-private Node rebalanceLeft(Node node) {
-    Node right = node.right;
-    if (getHeight(right.left) > getHeight(right.right)) {
-        node.right = rotateRight(right);
-        node.right.parent = node;
+    private Node rebalanceLeft(Node node) {
+        Node right = node.right;
+        if (getHeight(right.left) > getHeight(right.right)) {
+            node.right = rotateRight(right);
+            node.right.parent = node;
+        }
+        Node newRoot = rotateLeft(node);
+        if (newRoot.parent == null) root = newRoot;
+        return newRoot;  // ← retornar
     }
-    Node newRoot = rotateLeft(node);
-    if (newRoot.parent == null) root = newRoot;
-    return newRoot;  // ← retornar
-}
 
     private Node rotateLeft(Node node) {
         Node newNode = node.right;
@@ -208,5 +214,19 @@ private Node rebalanceLeft(Node node) {
         if (newNode.parent == null) root = newNode;
         return newNode;
     }
+    public ArrayList<T> getAllElements() {
+        ArrayList<T> lista = new ArrayList<>();
+        inorder(root, lista);
+        return lista;
+    }
+
+    private void inorder(Node node, ArrayList<T> lista) {
+        if (node == null) return;
+
+        inorder(node.left, lista);
+        lista.add(node.key);
+        inorder(node.right, lista);
+    }
 
 }
+
